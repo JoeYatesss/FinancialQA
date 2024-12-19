@@ -1,8 +1,7 @@
 import { Card } from '@/components/ui/card'
 
-// Add type definitions for our metrics
 interface Metrics {
-  // Answer metrics
+  // answer metrics
   answer_accuracy: number;
   exact_match_rate: number;
   cosine_similarity: number;
@@ -10,14 +9,14 @@ interface Metrics {
   rouge2: number;
   rougeL: number;
   
-  // Retrieval metrics
+  // retrieval metrics
   retrieval_precision: number;
   retrieval_recall: number;
   f1_score: number;
   ndcg: number;
   mrr: number;
   
-  // System metrics
+  // system metrics
   response_latency: number;
   context_retention: number;
   total_questions: number;
@@ -26,7 +25,6 @@ interface Metrics {
   total_tokens?: number;
 }
 
-// Create a separate client component for the chart
 import dynamic from 'next/dynamic'
 
 const PerformanceChart = dynamic(
@@ -36,13 +34,11 @@ const PerformanceChart = dynamic(
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-// Helper function to safely format numbers
 const formatNumber = (value: number | undefined | null, decimals: number = 2): string => {
   if (value === undefined || value === null) return '0.00';
   return value.toFixed(decimals);
 };
 
-// Helper function to format percentages
 const formatPercentage = (value: number | undefined | null): string => {
   if (value === undefined || value === null) return '0%';
   return `${(value * 100).toFixed(1)}%`;
@@ -62,7 +58,7 @@ export default async function MetricsPage() {
     }
 
     const data = await response.json();
-    metrics = data.metrics;  // Use the metrics directly from the response
+    metrics = data.metrics;
     
     if (!metrics) {
       metrics = {
@@ -108,38 +104,12 @@ export default async function MetricsPage() {
     };
   }
 
-  // Calculate retrieval success rate
   const retrievalSuccessRate = metrics.total_questions > 0 
     ? metrics.successful_retrievals / metrics.total_questions 
     : 0;
 
   return (
     <div className="p-8">
-      {/* <h1 className="text-3xl font-bold mb-8">System Performance Metrics</h1> */}
-      
-      {/* Overview Stats */}
-      {/* <Card className="p-6 mb-8">
-        <h2 className="text-2xl font-semibold mb-4">System Overview</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <p className="text-sm text-gray-600">Total Questions</p>
-            <p className="text-2xl font-bold">{metrics.total_questions}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Total Conversations</p>
-            <p className="text-2xl font-bold">{metrics.total_conversations}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Total Tokens</p>
-            <p className="text-2xl font-bold">{metrics?.total_tokens?.toLocaleString()}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Retrieval Success Rate</p>
-            <p className="text-2xl font-bold">{formatPercentage(retrievalSuccessRate)}</p>
-          </div>
-        </div>
-      </Card> */}
-      
       {/* Answer Quality Metrics */}
       <h2 className="text-2xl font-bold mb-4">Answer Quality Metrics</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -312,25 +282,6 @@ export default async function MetricsPage() {
           </div>
         </Card>
       </div>
-
-      {/* System Health */}
-      {/* <Card className="p-6 mb-8">
-        <h2 className="text-2xl font-semibold mb-4">System Health</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full ${metrics.f1_score > 0.7 ? 'bg-green-500' : 'bg-yellow-500'} mr-2`} />
-            <span className="text-gray-700">Retrieval Quality</span>
-          </div>
-          <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full ${metrics.response_latency < 3 ? 'bg-green-500' : 'bg-yellow-500'} mr-2`} />
-            <span className="text-gray-700">Response Time</span>
-          </div>
-          <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full ${metrics.exact_match_rate > 0.5 ? 'bg-green-500' : 'bg-yellow-500'} mr-2`} />
-            <span className="text-gray-700">Answer Quality</span>
-          </div>
-        </div>
-      </Card> */}
     </div>
   );
 } 

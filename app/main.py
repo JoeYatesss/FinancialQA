@@ -10,7 +10,6 @@ from app.rag.engine import RAGEngine
 
 app = FastAPI(title="Financial RAG System")
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,7 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize RAG engine
 rag_engine = RAGEngine()
 
 class ChatRequest(BaseModel):

@@ -17,19 +17,16 @@ class RAGEngine:
         """Initialize the enhanced RAG engine"""
         try:
             print("\n[RAG Engine] Initializing with fresh metrics...")
-            
-            # Initialize components
+
             self.embedding_engine = EnhancedEmbeddingEngine()
             self.retriever = None
             self.conversation_memories = {}
             self.metrics_tracker = MetricsTracker()
             self.metrics_storage = MetricsStorage()
             
-            # Reset metrics on startup
             self.metrics_tracker.reset()
             print("[RAG Engine] Metrics tracker reset")
             
-            # Initialize LLM with optimized settings
             self.llm = ChatOpenAI(
                 model_name="gpt-4-turbo-preview",
                 temperature=0.1,
@@ -37,10 +34,8 @@ class RAGEngine:
                 request_timeout=60
             )
             
-            # Initialize prompt templates
             self._initialize_prompts()
             
-            # Load or create vector store
             self._initialize_vector_store()
             
             print("[RAG Engine] Initialization complete\n")
@@ -108,7 +103,6 @@ Please provide your response:"""
             print("\n=== Creating New Vector Store ===")
             self._create_new_vector_store()
         
-        # Initialize retriever with vector store
         self.retriever = EnhancedRetriever(self.embedding_engine.vector_store)
     
     def _create_new_vector_store(self):
@@ -131,11 +125,9 @@ Please provide your response:"""
             print("\n[RAG Engine] Processing question, tracking metrics...")
             start_time = datetime.now()
             
-            # Track question tokens
             question_tokens = self.metrics_tracker.track_tokens(question)
             print(f"[RAG Engine] Question tokens: {question_tokens}")
             
-            # Initialize or get conversation memory
             if conversation_id not in self.conversation_memories:
                 print("[RAG Engine] New conversation started")
                 self.conversation_memories[conversation_id] = {
@@ -156,23 +148,19 @@ Please provide your response:"""
             
             conversation_data = self.conversation_memories[conversation_id]
             
-            # Get chat history
             chat_history = []
             if context and 'history' in context:
                 chat_history = context['history']
             
-            # Perform hybrid search
             search_results = self.retriever.hybrid_search(
                 query=question,
                 chat_history=chat_history
             )
             
-            # Track successful retrievals
             if search_results:
                 print("[RAG Engine] Successful retrieval, updating metrics...")
                 self.metrics_tracker.metrics["successful_retrievals"] += 1
             
-            # Calculate retrieval metrics using top search results as relevant docs if not provided
             if not (context and 'relevant_docs' in context):
                 context = context or {}
                 context['relevant_docs'] = [
@@ -186,28 +174,23 @@ Please provide your response:"""
                 relevant_docs=context['relevant_docs']
             )
             
-            # Prepare context from search results
             retrieved_context = self._prepare_context(search_results)
             
-            # Generate answer using LLM
             prompt = self.qa_template.format(
                 context=retrieved_context,
                 chat_history=self._format_chat_history(chat_history),
                 question=question
             )
             
-            # Track prompt tokens
             prompt_tokens = self.metrics_tracker.track_tokens(prompt)
             print(f"[RAG Engine] Prompt tokens: {prompt_tokens}")
             
             response = await self.llm.ainvoke(prompt)
             answer = response.content
             
-            # Track response tokens
             response_tokens = self.metrics_tracker.track_tokens(answer)
             print(f"[RAG Engine] Response tokens: {response_tokens}")
             
-            # Calculate ROUGE scores against retrieved context
             print("[RAG Engine] Calculating ROUGE scores with retrieved context...")
             rouge_scores = self.metrics_tracker.calculate_rouge_with_context(
                 answer=answer,
@@ -215,7 +198,6 @@ Please provide your response:"""
             )
             print(f"[RAG Engine] Context ROUGE scores: R1={rouge_scores['rouge1']:.2%}, R2={rouge_scores['rouge2']:.2%}, RL={rouge_scores['rougeL']:.2%}")
             
-            # Calculate answer metrics using previous answer as ground truth if available
             if not (context and 'ground_truth' in context) and chat_history:
                 last_answer = next((msg['content'] for msg in reversed(chat_history) 
                                  if msg.get('role') == 'assistant'), None)
@@ -224,7 +206,6 @@ Please provide your response:"""
                     context = context or {}
                     context['ground_truth'] = last_answer
             
-            # Always calculate answer metrics, using retrieved context as fallback ground truth
             if not (context and 'ground_truth' in context):
                 print("[RAG Engine] Using retrieved context as ground truth")
                 context = context or {}
@@ -238,7 +219,6 @@ Please provide your response:"""
             )
             print(f"[RAG Engine] Answer metrics: {answer_metrics}")
             
-            # Calculate context retention
             context_retention = 1.0
             if chat_history:
                 print("[RAG Engine] Calculating context retention...")
@@ -249,30 +229,24 @@ Please provide your response:"""
                 )
                 print(f"[RAG Engine] Context retention: {context_retention:.2%}")
 
-            # Update conversation memory
             conversation_data['memory'].save_context(
                 {"question": question},
                 {"answer": answer}
             )
             
-            # Track response time and update metrics
             end_time = datetime.now()
             print("[RAG Engine] Calculating response time...")
             response_time = self.metrics_tracker.track_response_time(start_time)
             
-            # Update metrics tracker
             print("[RAG Engine] Updating aggregate metrics...")
             self.metrics_tracker.metrics["total_questions"] += 1
             
-            # Update basic metrics
             self._update_metrics(conversation_data['metrics'], response_time)
             
-            # Get all metrics
             print("[RAG Engine] Getting aggregate metrics...")
             all_metrics = self.metrics_tracker.get_aggregate_metrics()
             conversation_data['metrics'].update(all_metrics)
             
-            # Store metrics
             print(f"[RAG Engine] Storing updated metrics with {all_metrics['total_tokens']} total tokens")
             self.metrics_storage.update_metrics(all_metrics)
             
@@ -302,7 +276,6 @@ Please provide your response:"""
             doc = result['document']
             score = result['score']
             
-            # Only include high-confidence results
             if score > 0.5:
                 context_parts.append(
                     f"[Relevance: {score:.2f}]\n{doc.page_content}\n"
@@ -316,7 +289,7 @@ Please provide your response:"""
             return "No previous conversation."
         
         formatted_history = []
-        for msg in chat_history[-3:]:  # Only include last 3 messages
+        for msg in chat_history[-3:]:
             role = msg.get('role', 'unknown')
             content = msg.get('content', '')
             formatted_history.append(f"{role.capitalize()}: {content}")
@@ -327,7 +300,6 @@ Please provide your response:"""
         """Update conversation metrics"""
         metrics['questions_asked'] += 1
         
-        # Update average response time
         current_avg = metrics['average_response_time']
         metrics['average_response_time'] = (
             (current_avg * (metrics['questions_asked'] - 1) + response_time)
@@ -339,10 +311,8 @@ Please provide your response:"""
         if conversation_id and conversation_id in self.conversation_memories:
             return self.conversation_memories[conversation_id]['metrics']
         
-        # Get aggregate metrics from metrics tracker
         aggregate_metrics = self.metrics_tracker.get_aggregate_metrics()
         
-        # Add conversation-level metrics
         aggregate_metrics.update({
             'total_conversations': len(self.conversation_memories),
             'total_questions': sum(
@@ -355,8 +325,6 @@ Please provide your response:"""
             )
         })
         
-        # Store updated metrics
         self.metrics_storage.update_metrics(aggregate_metrics)
         
-        # Return stored metrics which include history
         return self.metrics_storage.get_metrics()

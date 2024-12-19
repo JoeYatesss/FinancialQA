@@ -56,19 +56,15 @@ class EnhancedRetriever:
         if not chat_history:
             return query
             
-        # Extract key terms from recent history
         key_terms = set()
-        for msg in chat_history[-2:]:  # Look at last 2 messages
+        for msg in chat_history[-2:]:
             content = msg.get('content', '').lower()
-            # Extract numbers and financial terms
             numbers = re.findall(r'\d+(?:\.\d+)?%?', content)
             key_terms.update(numbers)
             
-            # Add financial terms
             terms = re.findall(r'\b(increase|decrease|growth|profit|revenue|cost|margin|ratio)\b', content)
             key_terms.update(terms)
         
-        # Add relevant terms to query
         if key_terms:
             enhanced_query = f"{query} {' '.join(key_terms)}"
             return enhanced_query
@@ -84,21 +80,16 @@ class EnhancedRetriever:
             "years": []
         }
         
-        # Extract currency values (handling $ format)
         currency = re.findall(r'\$\s*\d+(?:,\d{3})*(?:\.\d+)?', text)
         entities["currency"] = [c.replace('$', '').replace(',', '').strip() for c in currency]
         
-        # Extract percentages (including negative values)
         percentages = re.findall(r'-?\d+(?:\.\d+)?%', text)
         entities["percentages"] = [p.replace('%', '') for p in percentages]
-        
-        # Extract years
+
         years = re.findall(r'\b(19|20)\d{2}\b', text)
         entities["years"] = years
         
-        # Extract plain numbers (including negative values and commas)
         numbers = re.findall(r'-?\d+(?:,\d{3})*(?:\.\d+)?', text)
-        # Filter out numbers that are already captured as currency or years
         clean_numbers = []
         for n in numbers:
             n_clean = n.replace(',', '')
@@ -108,13 +99,12 @@ class EnhancedRetriever:
                 clean_numbers.append(n_clean)
         entities["numbers"] = clean_numbers
         
-        # Extract financial terms with expanded vocabulary
         financial_terms = re.findall(
             r'\b(increase|decrease|change|growth|decline|net sales|revenue|sales|'
             r'margin|profit|loss|total|cost|expense|income|earnings)\b',
             text.lower()
         )
-        entities["financial_terms"] = list(set(financial_terms))  # Remove duplicates
+        entities["financial_terms"] = list(set(financial_terms))
         
         return entities
     
@@ -127,11 +117,9 @@ class EnhancedRetriever:
         ranked_results = []
         
         for doc, semantic_score in semantic_results:
-            # Calculate keyword matching score
             doc_entities = doc.metadata.get('financial_entities', {})
             keyword_score = self._calculate_keyword_score(doc_entities, query_entities)
             
-            # Combine scores (semantic_score is distance, so lower is better)
             combined_score = (1 / (1 + semantic_score)) * (1 + keyword_score)
             
             ranked_results.append({
@@ -141,7 +129,6 @@ class EnhancedRetriever:
                 'keyword_score': keyword_score
             })
         
-        # Sort by combined score
         ranked_results.sort(key=lambda x: x['score'], reverse=True)
         return ranked_results
     
@@ -153,12 +140,10 @@ class EnhancedRetriever:
         """Calculate keyword matching score between document and query entities"""
         score = 0.0
         
-        # Score exact matches of numbers and percentages
         for entity_type in ['numbers', 'percentages']:
             matches = set(doc_entities.get(entity_type, [])) & set(query_entities.get(entity_type, []))
-            score += len(matches) * 0.5  # Higher weight for exact number matches
+            score += len(matches) * 0.5
         
-        # Score financial term matches
         term_matches = set(doc_entities.get('financial_terms', [])) & set(query_entities.get('financial_terms', []))
         score += len(term_matches) * 0.3
         
@@ -168,26 +153,21 @@ class EnhancedRetriever:
         """Group results by conversation and maintain context"""
         conversation_groups = defaultdict(list)
         
-        # Group by conversation
         for result in ranked_results:
             doc = result['document']
             doc_id = doc.metadata.get('doc_id')
             conversation_groups[doc_id].append(result)
         
-        # Contextualize and select best chunks
         final_results = []
         for doc_id, group in conversation_groups.items():
-            # Sort chunks by score and position
             group.sort(key=lambda x: (
                 x['score'],
                 x['document'].metadata.get('is_first_chunk', False)
             ), reverse=True)
             
-            # Take best chunk and its context
             best_chunk = group[0]
             chunk_id = best_chunk['document'].metadata.get('chunk_id')
             
-            # Cache conversation context
             if chunk_id not in self.conversation_cache:
                 self.conversation_cache[chunk_id] = {
                     'timestamp': datetime.now(),

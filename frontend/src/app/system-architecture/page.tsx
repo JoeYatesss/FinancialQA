@@ -184,19 +184,6 @@ export default function SystemArchitecturePage() {
             </div>
           </div>
         </Card>
-
-        {/* Development Philosophy */}
-        {/* <Card className="p-8 border-l-4 border-purple-400">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900">Engineering Approach</h2>
-          <div className="space-y-4">
-            <p className="text-gray-600 leading-relaxed">
-              Our development strategy prioritizes rapid iteration while maintaining enterprise-grade
-              financial QA capabilities. The architecture balances immediate functionality with
-              scalability, utilizing FAISS and local storage for accelerated development while
-              planning for production-ready infrastructure evolution.
-            </p>
-          </div>
-        </Card> */}
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
 import uvicorn
 from app.main import app

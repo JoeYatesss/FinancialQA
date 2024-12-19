@@ -39,7 +39,6 @@ export default function HomePage() {
     `session_${Date.now()}`
   )
 
-  // Load conversation history from localStorage on mount
   useEffect(() => {
     const savedMessages = localStorage.getItem(`chat_history_${conversationId}`)
     if (savedMessages) {
@@ -47,7 +46,6 @@ export default function HomePage() {
     }
   }, [conversationId])
 
-  // Save messages to localStorage whenever they change
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem(`chat_history_${conversationId}`, JSON.stringify(messages))
@@ -58,7 +56,6 @@ export default function HomePage() {
     e.preventDefault()
     if (!input.trim()) return
 
-    // Add user message
     const userMessage: Message = {
       role: 'user',
       content: input,
@@ -69,7 +66,6 @@ export default function HomePage() {
     setIsLoading(true)
 
     try {
-      // Make the actual API call with conversation history
       const response = await askQuestion({
         question: input,
         conversation_id: conversationId,
