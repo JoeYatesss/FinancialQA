@@ -144,7 +144,6 @@ Each approach has its trade-offs in terms of:
 - Limited 3-turn conversation history
 - Basic financial entity extraction
 - Simple memory management (ConversationBufferMemory)
-- add other data sources to the database via an upload
 - Save conversation history to database
 - Imporve the handling of metrics
 - Deploy to production
@@ -158,6 +157,7 @@ Each approach has its trade-offs in terms of:
 - Robust error handling and retry mechanisms
 - Comprehensive monitoring and logging
 - Authentication and rate limiting
+- Addition of other data sources to the database via an upload/APIs
 - Caching layer implementation
 - Testing infrastructure
 - CI/CD pipeline
