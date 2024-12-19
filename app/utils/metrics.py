@@ -88,31 +88,61 @@ class MetricsTracker:
         retrieved_ids = [doc['document'].metadata['doc_id'] for doc in retrieved_docs[:k] if doc['score'] > 0.5]
         relevant_ids = set(relevant_docs)
         
+        print("\n[Metrics Debug] Retrieval Analysis:")
+        print(f"Retrieved documents: {retrieved_ids}")
+        print(f"Relevant documents: {relevant_ids}")
+        print(f"Number of retrieved: {len(retrieved_ids)}")
+        print(f"Number of relevant: {len(relevant_ids)}")
+        
         # Calculate basic metrics
         true_positives = len(set(retrieved_ids) & relevant_ids)
         precision = true_positives / len(retrieved_ids) if retrieved_ids else 0
         recall = true_positives / len(relevant_ids) if relevant_ids else 0
         f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
         
+        print(f"True positives: {true_positives}")
+        print(f"Precision: {precision:.3f}")
+        print(f"Recall: {recall:.3f}")
+        print(f"F1: {f1:.3f}")
+        
         # Calculate NDCG
         dcg = 0
         idcg = 0
+        
+        # Calculate DCG with position-aware weighting
+        print("\nNDCG Calculation:")
         for i, doc_id in enumerate(retrieved_ids):
             rel = 1 if doc_id in relevant_ids else 0
-            dcg += rel / np.log2(i + 2)
+            gain = (2**rel - 1) / np.log2(i + 2)
+            dcg += gain
+            print(f"Position {i+1}: doc_id={doc_id}, relevant={rel}, gain={gain:.3f}")
         
-        # Calculate ideal DCG
-        for i in range(min(len(relevant_ids), len(retrieved_ids))):
-            idcg += 1 / np.log2(i + 2)
+        # Calculate ideal DCG using all relevant documents
+        print("\nIDCG Calculation:")
+        ideal_rels = sorted([1 for _ in range(len(relevant_ids))], reverse=True)
+        for i, rel in enumerate(ideal_rels):
+            gain = (2**rel - 1) / np.log2(i + 2)
+            idcg += gain
+            print(f"Position {i+1}: relevance={rel}, gain={gain:.3f}")
             
         ndcg = dcg / idcg if idcg > 0 else 0
+        print(f"\nFinal NDCG: DCG={dcg:.3f}, IDCG={idcg:.3f}, NDCG={ndcg:.3f}")
         
-        # Calculate MRR
+        # Calculate MRR - handle no relevant docs case
         mrr = 0
-        for i, doc_id in enumerate(retrieved_ids):
-            if doc_id in relevant_ids:
-                mrr = 1 / (i + 1)
-                break
+        if relevant_ids:
+            print("\nMRR Calculation:")
+            ranks = []
+            for i, doc_id in enumerate(retrieved_ids):
+                if doc_id in relevant_ids:
+                    rank = 1 / (i + 1)
+                    ranks.append(rank)
+                    print(f"Position {i+1}: doc_id={doc_id}, relevant=True, rank={rank:.3f}")
+                else:
+                    print(f"Position {i+1}: doc_id={doc_id}, relevant=False")
+            
+            mrr = max(ranks) if ranks else 0
+            print(f"Final MRR: {mrr:.3f} (best rank found)")
                 
         # Update metrics
         self.metrics["retrieval_precision"].append(precision)

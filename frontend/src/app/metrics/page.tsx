@@ -203,7 +203,7 @@ export default async function MetricsPage() {
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm text-gray-600">Precision</span>
-                <span className="text-sm font-bold">{formatPercentage(metrics.retrieval_precision)}</span>
+                <span className="text-sm font-bold text-gray-600" >{formatPercentage(metrics.retrieval_precision)}</span>
               </div>
               <div className="h-2 bg-gray-200 rounded-full">
                 <div 
@@ -215,7 +215,7 @@ export default async function MetricsPage() {
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm text-gray-600">Recall</span>
-                <span className="text-sm font-bold">{formatPercentage(metrics.retrieval_recall)}</span>
+                <span className="text-sm font-bold text-gray-600">{formatPercentage(metrics.retrieval_recall)}</span>
               </div>
               <div className="h-2 bg-gray-200 rounded-full">
                 <div 
@@ -227,7 +227,7 @@ export default async function MetricsPage() {
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm text-gray-600">F1 Score</span>
-                <span className="text-sm font-bold">{formatPercentage(metrics.f1_score)}</span>
+                <span className="text-sm font-bold text-gray-600">{formatPercentage(metrics.f1_score)}</span>
               </div>
               <div className="h-2 bg-gray-200 rounded-full">
                 <div 
