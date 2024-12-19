@@ -28,6 +28,7 @@
 
 4. **Set up environment variables**
    ```
+   NEXT_PUBLIC_API_URL=http://localhost:8000
    # Add your OpenAI API key to .env
    "OPENAI_API_KEY=your-api-key-here" >> .env
    ```
