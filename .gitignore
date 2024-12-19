@@ -1,0 +1,133 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment variables
+.env
+
+# Virtual Environment
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+.env*.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log* 
+
+# Large files and directories
+*.log
+logs/
+*.dump
+*.gz
+*.zip
+*.tar
+*.rar
+*.7z
+
+# Python virtual environment
+.venv/
+virtualenv/
+venv/
+
+# Large model files or datasets
+*.pkl
+*.h5
+*.model
+*.bin
+models/
+datasets/
+
+# Temporary files
+tmp/
+temp/
+
+# Vector stores and embeddings
+data/vector_store/
+**/vector_store/
+*.faiss
+*.pkl
+*.index
+*.bin
+*.vec
+*.npy
+*.npz
+
+# Data directories (add exceptions for specific files you want to keep)
+data/*
+!data/.gitkeep
+!data/README.md
+
+# Data and Vector Stores
+data/
+vector_stores/
+embeddings/
+*.faiss
+*.faiss.index
+*.faiss.index.bin
+*.faiss.index.pkl
+.faiss
+*.hdf5
+*.ann
+*.ivf
+*.pkl
+*.index
+*.bin
+*.vec
+*.npy
+*.npz
+chroma/
+chromadb/
+milvus/
+pinecone/
+qdrant/
+weaviate/
+
+# Specific Python compiled files
+*.cpython-39.pyc
+*.cpython-310.pyc
+*.cpython-311.pyc
+*.cpython-312.pyc
+*.cpython-313.pyc
+*.cpython-314.pyc
+*.cpython-315.pyc
+*.cpython-316.pyc
+*.cpython-317.pyc
+*.cpython-318.pyc
+*.cpython-319.pyc
+
+# Specific index files
+*.index.faiss
+*.index.pkl
