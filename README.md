@@ -58,37 +58,84 @@
 
 ## Architecture Overview
 
-This system implements a sophisticated Retrieval-Augmented Generation (RAG) pipeline specifically designed for financial document question-answering.
+This system implements a Retrieval-Augmented Generation (RAG) pipeline specifically designed for financial document question-answering. The architecture was carefully designed to balance accuracy, performance, and maintainability while handling financial information.
 
-### Model Choices
+### Design Philosophy
 
-- **Main LLM**: GPT-4 Turbo (`gpt-4-turbo-preview`)
-  - Configured with low temperature (0.1) for deterministic and precise financial responses
-  - Maximum token limit: 2000
-  - Request timeout: 60 seconds
+- **Accuracy First**: Financial data requires extremely high precision. The system prioritizes accurate information retrieval and response generation over speed.
+  
+- **Context Preservation**: Financial documents often contain interconnected information (e.g., metrics tied to specific time periods or conditions). The architecture maintains these relationships through:
+  - Strategic document chunking that keeps related information together
+  - Context-aware retrieval that considers document structure
+  - Conversation memory to maintain topic continuity
 
-- **Embeddings**: OpenAI's `text-embedding-3-small`
-  - Balanced choice between cost and performance
-  - Optimized for financial context
+### Why RAG?
 
-- **Vector Storage**: FAISS
-  - Efficient similarity search capabilities
-  - Lightweight memory footprint
-  - Local storage implementation
+1. **Source Truth**: Traditional LLMs can sometimes generate plausible-sounding but incorrect information (hallucinations). RAG solves this by:
+   - Retrieving specific passages from your verified financial documents
+   - Using these passages as evidence to generate responses
+   - Ensuring every answer can be traced back to source documents
+   - Maintaining data lineage for regulatory compliance
 
-### RAG System Architecture
+2. **Cost Efficiency**: Reduces token usage by providing focused context
+3. **Up-to-date Information**: Easy to update by simply refreshing the document database
+4. **Reduced Hallucination**: LLM responses are constrained by retrieved context
 
-#### Enhanced Retriever with Hybrid Search
-- Combines semantic search with keyword-based matching
-- Financial entity extraction for improved context matching
-- Score-based reranking system
-- Conversation-based result grouping for context maintenance
+### System Components
 
-#### Optimized Chunking Strategy
-- Chunk size: 500 tokens
-- Overlap: 100 tokens
-- Recursive character splitting
-- Preserves financial data table structure
+Each component was chosen with specific reasoning:
+
+1. **Vector Database (FAISS)**
+   - Local implementation for rapid development
+   - Excellent performance for our current scale
+   - Easy migration path to production databases
+
+2. **Embedding Model (text-embedding-3-small)**
+   - Strong performance on financial text
+   - Cost-effective for development
+   - Good balance of speed and accuracy
+
+3. **LLM (GPT-4 Turbo)**
+   - Superior understanding of financial concepts
+   - Excellent at maintaining context
+   - Strong numerical reasoning capabilities
+
+### Data Flow
+
+1. Query → Embedding → Retrieval → Context Assembly → Response Generation
+
+This linear flow prioritizes:
+- Maintainability: Each step is isolated and testable
+- Transparency: Clear data transformation path
+- Extensibility: Easy to add new components or modify existing ones
+
+## Other Options
+
+1. **Graph Database Approach**
+   - Represents financial documents as interconnected nodes and relationships
+   - Better captures complex financial relationships and dependencies
+   - Enables hierarchical and network analysis
+   - Supports temporal relationships between financial events
+   - Visual represntation of the data (would have been a cool addition, showing the retieval of the data)
+   - Challenges: Higher complexity, longer developement time
+
+2. **Semantic Search with Traditional NLP**
+   - Uses techniques like TF-IDF, BM25, or LSA
+   - Lower computational requirements
+   - No dependency on external AI services
+   - Challenges: Less understanding of context, literal matching only
+
+3. **Fine-tuned Language Models**
+   - Train specialized models on financial documents
+   - Better domain-specific understanding
+   - No need for real-time retrieval
+   - Challenges: Regular retraining needed, high computational cost
+
+Each approach has its trade-offs in terms of:
+- Accuracy vs. Speed
+- Complexity vs. Maintainability
+- Cost vs. Capability
+- Development Time vs. Performance
 
 ## Current Limitations and Future Improvements
 
@@ -123,12 +170,6 @@ This system implements a sophisticated Retrieval-Augmented Generation (RAG) pipe
 - Answer confidence scoring
 - Real-time metric visualization
 - Resource utilization monitoring
-
-## Development Rationale
-
-The system was designed with a focus on rapid implementation while maintaining high-quality financial QA capabilities. The architecture choices reflect a balance between immediate functionality and future scalability, with clear paths for production-ready improvements.
-
-The use of FAISS and local storage solutions were chosen for quick development and testing, with the understanding that these components would need to be replaced with more robust solutions in a production environment.
 
 ## System Metrics
 
