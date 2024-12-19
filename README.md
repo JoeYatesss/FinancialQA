@@ -90,83 +90,6 @@ This system implements a sophisticated Retrieval-Augmented Generation (RAG) pipe
 - Recursive character splitting
 - Preserves financial data table structure
 
-### Metrics System
-
-Our metrics system is designed to comprehensively evaluate both the retrieval and generation aspects of the RAG pipeline, ensuring high-quality financial information delivery.
-
-#### Retrieval Metrics
-- **Precision and Recall Tracking**
-  - Precision measures the proportion of retrieved documents that are relevant
-  - Recall measures the proportion of relevant documents that were successfully retrieved
-  - Critical for financial QA where both accuracy and completeness are essential
-  - Helps identify if the system is missing crucial financial information or retrieving irrelevant data
-
-- **Score-based Relevance Assessment**
-  - Combines semantic similarity scores with financial entity matching
-  - Higher weights assigned to exact matches of financial numbers and percentages (0.5)
-  - Lower weights for general financial term matches (0.3)
-  - Ensures financial data accuracy in retrieved context
-
-- **Context Retention Measurements**
-  - Tracks how well context is maintained across conversation turns
-  - Evaluates the system's ability to maintain coherent financial discussions
-  - Particularly important for multi-turn queries about financial reports or trends
-
-#### Answer Quality Metrics
-- **ROUGE Scores Against Retrieved Context**
-  - ROUGE-1: Measures unigram overlap between generated answer and context
-  - ROUGE-2: Measures bigram overlap for phrase accuracy
-  - ROUGE-L: Measures longest common subsequence for fluency
-  - Ensures answers are grounded in the retrieved financial documents
-
-- **Semantic Similarity with Ground Truth**
-  - Uses embedding-based similarity scoring
-  - Evaluates answer correctness beyond exact word matching
-  - Particularly useful for financial explanations where multiple valid phrasings exist
-  - Helps identify conceptual accuracy in financial explanations
-
-- **Conversation Context Retention**
-  - Measures semantic similarity between consecutive answers
-  - Evaluates consistency in financial advice and explanations
-  - Tracks topic drift in multi-turn financial discussions
-  - Important for maintaining coherent financial narratives
-
-#### Performance Metrics (Planned)
-- **Latency Tracking**
-  - Component-wise timing (retrieval, processing, generation)
-  - Critical for real-time financial applications
-  - Helps identify bottlenecks in the pipeline
-
-- **User Satisfaction Metrics**
-  - Answer helpfulness ratings
-  - Query reformulation rates
-  - Session completion rates
-  - Essential for measuring real-world utility in financial decision-making
-
-- **Resource Utilization**
-  - Token usage monitoring
-  - Embedding operation counts
-  - Storage efficiency
-  - Important for cost optimization in production environments
-
-### Metric Selection Rationale
-
-Our metric selection was driven by several key considerations in financial QA:
-
-1. **Accuracy Priority**: Financial information must be precise and accurate, hence the focus on exact matching and semantic similarity metrics.
-
-2. **Context Importance**: Financial discussions often require maintaining context across multiple turns, reflected in our context retention metrics.
-
-3. **User-Centric Evaluation**: Planned user satisfaction metrics ensure the system provides actually useful financial insights.
-
-4. **Performance Monitoring**: Latency and resource metrics ensure the system remains cost-effective and responsive in production.
-
-These metrics work together to ensure:
-- Retrieved context is relevant and complete
-- Generated answers are accurate and well-grounded
-- Conversations remain coherent and contextual
-- System performance meets production requirements
-
 ## Current Limitations and Future Improvements
 
 ### Implementation Limitations
@@ -174,6 +97,7 @@ These metrics work together to ensure:
 - Limited 3-turn conversation history
 - Basic financial entity extraction
 - Simple memory management (ConversationBufferMemory)
+- add other data sources to the database via an upload
 - Save conversation history to database
 - Imporve the handling of metrics
 - Deploy to production
@@ -204,28 +128,46 @@ These metrics work together to ensure:
 
 The system was designed with a focus on rapid implementation while maintaining high-quality financial QA capabilities. The architecture choices reflect a balance between immediate functionality and future scalability, with clear paths for production-ready improvements.
 
-The use of FAISS and local storage solutions was chosen for quick development and testing, with the understanding that these components would need to be replaced with more robust solutions in a production environment.
+The use of FAISS and local storage solutions were chosen for quick development and testing, with the understanding that these components would need to be replaced with more robust solutions in a production environment.
 
-### Troubleshooting
+## System Metrics
 
-Common issues and solutions:
+### Current Performance Metrics
 
-1. **OpenAI API Key Issues**
-   - Ensure your API key is correctly set in the `.env` file
-   - Check API key permissions and usage limits
+| Metric | Result | Why This Metric | Potential Improvements |
+|--------|---------|----------------|----------------------|
+| Embedding Time | 30:02 minutes | Measures initial setup efficiency | • Optimize chunk size<br>• Parallel processing<br>• More efficient text preprocessing |
+| Response Latency | 9-11 seconds | Critical for user experience | • Switch to production vector DB<br>• Optimize context window size<br>• Cache frequent queries |
+| Accuracy | 0.8 | Measures correctness of responses | • Fine-tune retrieval strategy<br>• Improve prompt engineering<br>• Enhance context selection |
+| Cosine Similarity | 0.8 | Shows relevance of retrieved context | • Better document chunking<br>• Improve embedding strategy<br>• Enhanced reranking |
+| F1 Score | 0.75 | Balanced measure of precision and recall | • Optimize retrieval threshold<br>• Better context filtering<br>• Improve query preprocessing |
+| Average Token Usage | ~1500 | Tracks cost and efficiency | • Optimize prompt length<br>• Better context pruning<br>• Improve response conciseness |
 
-2. **Embedding Generation Errors**
-   - Verify input data format
-   - Check available disk space for vector store
-   - Ensure OpenAI API is accessible
+### Recommended Additional Metrics
 
-3. **Frontend Connection Issues**
-   - Verify backend is running and accessible
-   - Check CORS settings in backend configuration
-   - Ensure correct ports are available
+1. **User Experience Metrics**
+   - Time to first response
+   - User satisfaction rating
+   - Query success rate
+   - Session completion rate
+
+2. **Quality Metrics**
+   - Hallucination rate
+   - Factual accuracy
+   - Numerical precision
+   - Source citation accuracy
+
+3. **System Health Metrics**
+   - Memory usage
+   - CPU utilization
+   - API error rate
+   - Database query time
+
+4. **Business Metrics**
+   - Cost per query
+   - Daily active users
+   - User retention rate
+   - Average session duration
 
 
-Embedding time: 
-   start: 12:42
-   end: 1:12
-   total: 30:02
+
