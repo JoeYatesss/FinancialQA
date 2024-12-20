@@ -12,6 +12,7 @@
 You can run the application using:
 ```
 docker-compose up --build
+or
 docker-compose
 ```
 
