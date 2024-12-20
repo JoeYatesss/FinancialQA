@@ -9,6 +9,14 @@
 
 ### Installation
 
+You can run the application using 
+'''
+docker-compose up --build
+docker-compose
+'''
+
+If this fails, you can run the application manually (see below).
+
 1. **Set up virtual environment**
    ```
    # Create virtual environment
