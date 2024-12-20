@@ -9,11 +9,11 @@
 
 ### Installation
 
-You can run the application using 
-'''
+You can run the application using:
+```
 docker-compose up --build
 docker-compose
-'''
+```
 
 If this fails, you can run the application manually (see below).
 
