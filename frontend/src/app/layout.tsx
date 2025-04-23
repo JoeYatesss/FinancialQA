@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { NavLink } from '@/components/nav-link'
 
 export const metadata = {
-  title: 'Tomoro.ai Chat',
+  title: 'Financial Chat',
   description: 'AI-powered chat platform',
 }
 
@@ -22,7 +22,7 @@ export default function RootLayout({
               <div className="flex h-16 shrink-0 items-center">
                 <Link href="/" className="flex items-center space-x-2">
                   <span className="text-2xl font-bold">
-                    Tomoro<span className="text-[#d8ff00]">.ai</span>
+                    finance<span className="text-[#d8ff00]">.ai</span>
                   </span>
                 </Link>
               </div>
@@ -72,7 +72,7 @@ export default function RootLayout({
                     <span className="text-sm font-medium text-[#d8ff00]">AI</span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#d8ff00]">Tomoro AI</p>
+                    <p className="text-sm font-semibold text-[#d8ff00]">Finance AI</p>
                     <p className="text-xs text-[#d8ff00]/70">v1.0.0</p>
                   </div>
                 </div>
